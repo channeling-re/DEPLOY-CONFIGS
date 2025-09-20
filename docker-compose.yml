@@ -26,7 +26,7 @@ x-llm-env: &llm-env
 
 services:
   spring-app:
-    image: hadoroke/channeling-be:latest
+    image: ochangmin/channeling-be:latest
     container_name: spring-app
     ports:
       - "8080:8080"
@@ -68,7 +68,7 @@ services:
       start_period: 40s
 
   fastapi-app:
-    image: hadoroke/channeling-llm:latest
+    image: ochangmin/channeling-llm:latest
     container_name: fastapi-app
     ports:
       - "8000:8000"
@@ -87,7 +87,7 @@ services:
       - broker
 
   overview-consumer:
-    image: hadoroke/channeling-llm:latest
+    image: ochangmin/channeling-llm:latest
     container_name: overview-consumer
     command: python kafka_overview_consumer.py
     environment:
@@ -99,7 +99,7 @@ services:
       - broker
   
   analysis-consumer:
-    image: hadoroke/channeling-llm:latest
+    image: ochangmin/channeling-llm:latest
     container_name: analysis-consumer
     command: python kafka_analysis_consumer.py
     environment:
@@ -111,7 +111,7 @@ services:
       - broker
   
   idea-consumer:
-    image: hadoroke/channeling-llm:latest
+    image: ochangmin/channeling-llm:latest
     container_name: idea-consumer
     command: python kafka_idea_consumer.py
     environment:
