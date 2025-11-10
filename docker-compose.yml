@@ -80,19 +80,19 @@ services:
       - broker
 
   broker:
-  image: confluentinc/confluent-local:7.9.0
-  container_name: broker
-  env_file:
-    - .env
-  environment:
-    # 컨테이너 내부/외부 통신 모두 9092
-    KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker:9092,PLAINTEXT_HOST://localhost:9092'
-    KAFKA_LISTENERS: 'PLAINTEXT://broker:9092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092'
-    KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker:29093'
-  ports:
-    - "9092:9092"
-  networks:
-    - app-network
+    image: confluentinc/confluent-local:7.9.0
+    container_name: broker
+    env_file:
+      - .env
+    environment:
+      # 컨테이너 내부/외부 통신 모두 9092
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker:9092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_LISTENERS: 'PLAINTEXT://broker:9092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker:29093'
+    ports:
+      - "9092:9092"
+    networks:
+      - app-network
 
 
   kafka-ui:
