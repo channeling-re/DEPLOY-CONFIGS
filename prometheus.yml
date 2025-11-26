@@ -3,13 +3,59 @@ global:
   scrape_timeout: 15s
 
 scrape_configs:
+  # 0. Prometheus 자기 자신
   - job_name: 'prometheus'
     static_configs:
-      - targets: [ 'localhost:9090' ]
+      - targets: [ 'prometheus:9090' ]
 
+  # 1. Spring Boot (Actuator + micrometer prometheus)
   - job_name: 'spring'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['3.39.219.73:8080']  # Mac/Win 로컬. 리눅스면 'host.docker.internal' 대신 호스트 IP
+      - targets: ['172.31.33.62:8080']  # Mac/Win 로컬. 리눅스면 'host.docker.internal' 대신 호스트 IP
         labels:
           application: channeling-be
+
+  # 2. FastAPI (예: /metrics에 prometheus_exporter 노출했다고 가정)
+  - job_name: 'fastapi'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: [ '172.31.33.62:8000' ]
+        labels:
+          application: 'channeling-llm-api'
+
+  # 3. Kafka consumers (각 컨슈머 프로세스에 /metrics 붙였다고 가정)
+  - job_name: 'consumers'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          - '172.31.33.62:8000'
+          - '172.31.33.62:8000'
+          - '172.31.33.62:8000'
+        labels:
+          application: 'channeling-consumer'
+
+  # 4. Kafka broker (JMX exporter 또는 kafka-exporter를 broker 옆에 붙였다고 가정)
+  #   - 예: kafka-exporter 컨테이너 이름을 kafka-exporter, 포트 9308 로 노출
+  - job_name: 'kafka'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: [ '172.31.33.62:9092' ]
+        labels:
+          application: 'kafka-broker'
+
+  # 5. 노드 리소스 (EC2 OS 레벨 CPU/메모리/디스크)
+  #   - node_exporter 컨테이너 이름: node-exporter, 포트: 9100
+  - job_name: 'node'
+    static_configs:
+      - targets: [ '172.31.33.62:9100' ]
+        labels:
+          role: 'ec2-node'
+
+  # (선택) 7. Kafka UI도 메트릭 노출한다면 추가 가능
+  # - job_name: 'kafka-ui'
+  #   metrics_path: '/metrics'
+  #   static_configs:
+  #     - targets: ['kafka-ui:8080']
+  #       labels:
+  #         application: 'kafka-ui'
